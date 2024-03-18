@@ -3,8 +3,9 @@ console.log("hey");
 const canvas = document.getElementById("myCanvas");
 const ctx = canvas.getContext("2d");
 
-var mousePressed = false;
-var touchDrawing = false;
+var isDrawing = false;
+var touchX, touchY;
+
 const MAIN_MOUSE_BUTTON = 0;
 
 canvas.addEventListener("mousedown", mouseDown);
@@ -14,63 +15,58 @@ canvas.addEventListener("touchstart", startDrawing);
 canvas.addEventListener("touchend", endDrawing);
 canvas.addEventListener("touchmove", drawTouch);
 
+setlineprops(); 
+
 function setlineprops() {
     ctx.lineWidth = 4;
     ctx.lineJoin = "round";
     ctx.lineCap = "round";
-    return ctx;
 }
 
 function mouseDown() {
-    mousePressed = true;
-    console.log("mouse pressed: " + mousePressed);
+    isDrawing = true;
+    console.log("mouse pressed: " + isDrawing);
     draw();
 }
 
 function mouseUp(){
-    mousePressed = false;
-    console.log("mouse pressed: " + mousePressed);
+    isDrawing = false;
+    console.log("mouse pressed: " + isDrawing);
     ctx.beginPath();
 }
 
 function draw(){
-    if(!mousePressed) return;
+    if(!isDrawing) return;
 
     const x = event.clientX - canvas.offsetLeft; // Get the mouse X coordinate relative to the canvas
     const y = event.clientY - canvas.offsetTop; // Get the mouse Y coordinate relative to the canvas
 
-    ctx.lineTo(x, y); // Draw a line to the current mouse position
-    ctx.stroke(); // Stroke the current path
-
+    ctx.lineTo(x, y); 
+    ctx.stroke(); 
 }
 
-function startDrawing() {
+function startDrawing(event) {
     event.preventDefault();
-    touchDrawing = true;
-    ctx.lineTo(x,  y);
-    ctx.stroke();
+    isDrawing = true;
+    getTouchPos(event);
+    ctx.beginPath();
+    ctx.moveTo(touchX, touchY);
 }
 
-function endDrawing() {
-    touchDrawing = false;
+function endDrawing(){
+    isDrawing = false;
     ctx.beginPath();
 }
 
-function drawTouch() {
-    if(!mousePressed) return;
-
-    const { x, y } = getCanvasCoordinates(event.touches[0]);
-    ctx.lineTo(x, y); // Draw a line to the current mouse position
-    ctx.stroke(); // Stroke the current path
-
+function drawTouch(event){
+    if(!isDrawing) return;
+    getTouchPos(event);
+    ctx.lineTo(touchX, touchY); 
+    ctx.stroke(); 
 }
 
-function getCanvasCoordinates(event) {
+function getTouchPos(event) {
     const rect = canvas.getBoundingClientRect();
-    const scaleX = canvas.width / rect.width;
-    const scaleY = canvas.height / rect.height;
-    return {
-        x: (event.pageX - rect.left) * scaleX,
-        y: (event.pageY - rect.top) * scaleY
-    }
+    touchX = event.touches[0].clientX - rect.left;
+    touchY = event.touches[0].clientY - rect.top;
 }
