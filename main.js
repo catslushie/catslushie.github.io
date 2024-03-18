@@ -46,6 +46,7 @@ function draw(){
 }
 
 function startDrawing(event) {
+    event.stopPropagation();
     event.preventDefault();
     isDrawing = true;
     getTouchPos(event);
@@ -54,12 +55,14 @@ function startDrawing(event) {
 }
 
 function endDrawing(){
+    event.stopPropagation();
     event.preventDefault();
     isDrawing = false;
     ctx.beginPath();
 }
 
 function drawTouch(event){
+    event.stopPropagation();
     event.preventDefault();
     if(!isDrawing) return;
     getTouchPos(event);
