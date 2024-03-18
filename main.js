@@ -54,11 +54,13 @@ function startDrawing(event) {
 }
 
 function endDrawing(){
+    event.preventDefault();
     isDrawing = false;
     ctx.beginPath();
 }
 
 function drawTouch(event){
+    event.preventDefault();
     if(!isDrawing) return;
     getTouchPos(event);
     ctx.lineTo(touchX, touchY); 
